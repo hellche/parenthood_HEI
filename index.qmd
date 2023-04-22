@@ -45,33 +45,23 @@ pvalue <- function(x, ...) {
 }
 ```
 
+
+
 ```{r data}
-set <- read_csv("~/Desktop/EGOS2023/data/set.csv")
+set <- read_csv("~/Desktop/data/set.csv") # not available at GitHub
 
 set_uni <- set %>% 
   filter(wave == 'wave_1_2'| wave == 'wave_2_5' | wave ==  'wave_2_6') %>% 
   filter(age_int >= 21 & age_int <= 80) %>% 
   filter(type_doj != "Другое") %>% 
   filter(org_type == "Ведущий вуз" | org_type == "Вуз") %>% 
-  rename(gender = sex)
+  
 
-```
-
-```{r pallets}
-#col_gender <- c("#ffe043","#b3b3b3")
-col_gender2 <- c("#f5d64d","#b3b3b3")
-col_gender3 <- c("#ffd91a","#b3b3b3")
-col_gap <- c("#91C45A", "#C19AD6")
-
-#show_col(col_gender)
 ```
 
 ### Table S1: Sample Selection Criteria and Procedure
 
-<center>
-![](pics/Table_S1_sample_selection.svg){width=45%}
-</center>
-
+<center>![](pics/Table_S1_sample_selection.svg){width="45%"}</center>
 
 ### Table S2: List of Leading Universities
 
@@ -84,11 +74,9 @@ Tab_1 <- read_delim("data/top_uni_list.csv",
 Tab_1$X3[is.na(Tab_1$X3)] <- " "
 
 kable(Tab_1,
-      # align = c("l","c"),
       col.names = c("#","University", "Comment"),
       escape = FALSE) %>% 
   kable_styling(full_width = F, position = "center", font_size = 12) %>% 
-  #kable_styling(full_width = FALSE) %>%
   column_spec(1, width = "4em") 
   
 ```
@@ -99,14 +87,11 @@ kable(Tab_1,
 #| fig-align: 'center'
 
 Tab_1 <- table1(~ first_ch_age 
-                #+ kan_age
                 | gender, data = set_uni,
                 overall = FALSE,
                 extra.col=list(`P-value`=pvalue))
 Tab_1 <- as.data.frame(Tab_1)[-1, ]
 Tab_1 <- Tab_1[-1, ] 
-#Tab_1[1, 1] <- "Age of first child"
-#Tab_1[5, 1] <- "Age of Ph.D. defense"
 rownames(Tab_1) <- NULL
 
 kable(Tab_1,
@@ -127,7 +112,7 @@ ros <- ros %>%
   pivot_longer(c(`19 и <`:`не указан \nnot stated`), names_to = "age", values_to = "count")
 
 ros1 <- ros %>% mutate(sh = 100 * count / `\nTotal`,
-               sh = round(sh, digits = 2)) %>% 
+                       sh = round(sh, digits = 2)) %>% 
   filter(`\nYears` >= 2000) %>% 
   mutate(age = if_else(age == "50 и >", "50 и >", age)) %>% 
   filter(age != "не указан \nnot stated") 
@@ -155,7 +140,6 @@ ggplot() +
         plot.caption = element_text(face = "italic")) 
 ```
 
-
 ### Table S4: Comparison of Publication Productivity between Men and Women by Parenthood Status
 
 ```{r}
@@ -166,39 +150,32 @@ df_2_ch <- set_uni %>% filter(v_299_2  == "2")
 # df_3_and_more_ch <- df %>% filter(v_299_2 == "3 и >")
 
 
-Tab_1 <- table1(~  n_rinc +
-         n_rinc_core +
-         age_int
-       | gender , data = df_0_ch, 
-       overall = FALSE,
-       extra.col=list(`P-value`=pvalue))
+Tab_1 <- table1(~ n_rinc + n_rinc_core + age_int | gender , data = df_0_ch, 
+                overall = FALSE,
+                extra.col = list(`P-value` = pvalue))
 
 Tab_1 <- as.data.frame(Tab_1)[-1, ]
-#Tab_1 <- Tab_1[-1, ] 
+
 Tab_1[1, 1] <- "Total publications in RISC"
 Tab_1[4, 1] <- "RISC Core publications"
 Tab_1[7, 1] <- "Age of respondent"
 rownames(Tab_1) <- NULL
 
-Tab_2 <- table1(~  n_rinc +
-          n_rinc_core +age_int
-       | gender , data = df_1_ch, 
-       overall = FALSE,
-       extra.col=list(`P-value`=pvalue))
+Tab_2 <- table1(~ n_rinc + n_rinc_core + age_int | gender , data = df_1_ch, 
+                overall = FALSE,
+                extra.col = list(`P-value` = pvalue))
 
 Tab_2 <- as.data.frame(Tab_2)[-1, ]
-#Tab_1 <- Tab_1[-1, ] 
+
 Tab_2[1, 1] <- "Total publications in RISC"
 Tab_2[4, 1] <- "RISC Core publications"
 Tab_2[7, 1] <- "Age of respondent"
 rownames(Tab_2) <- NULL
 Tab_2 <- Tab_2[, -1] 
 
-Tab_3 <- table1(~  n_rinc +
-         n_rinc_core + age_int
-       | gender , data = df_2_ch, 
-       overall = FALSE,
-       extra.col=list(`P-value`=pvalue))
+Tab_3 <- table1(~ n_rinc + n_rinc_core + age_int| gender , data = df_2_ch, 
+                overall = FALSE,
+                extra.col = list(`P-value` = pvalue))
 
 Tab_3 <- as.data.frame(Tab_3)[-1, ]
 Tab_3[1, 1] <- "Total publications in RISC"
@@ -222,11 +199,12 @@ kable(Tab,
   add_header_above(c(" ", "No Children" = 3, "One Child" = 3, "Two Children" = 3))
   
 ```
+
 ### Table S5: Regression Analysis of Publication Productivity
 
 ```{r, results = "asis"}
 #| fig-align: 'center'
-positions <- read_delim("~/Desktop/EGOS2023/data/positions.csv", delim = ";",
+positions <- read_delim("data/positions.csv", delim = ";",
                         escape_double = FALSE, trim_ws = TRUE)
 
 reg <- set_uni %>% group_by(short_doj_new) %>%
@@ -236,48 +214,44 @@ reg <- set_uni %>% group_by(short_doj_new) %>%
   filter(!is.na(v_299_2)) %>% 
   select(v_299_2, gender, n_rinc_core, n_rinc, age_int, en, org_type) %>% 
   mutate(child = case_when(v_299_2 == "0" ~ "No Children",
-                             TRUE ~ "One or more")) %>% 
+                           TRUE ~ "One or more")) %>% 
   mutate(have_child = case_when(v_299_2 != "0" ~ 1,
                                 TRUE ~ 0)) %>% 
   mutate(no_child = case_when(v_299_2 == "0" ~ 1,
-                                TRUE ~ 0)) %>% 
+                              TRUE ~ 0)) %>% 
   mutate(men = case_when(gender == "Male" ~ 1,
-                                TRUE ~ 0)) %>% 
+                         TRUE ~ 0)) %>% 
   mutate(women = case_when(gender == "Female" ~ 1,
-                                TRUE ~ 0))
+                           TRUE ~ 0))
 
-fit1 <- lm(n_rinc_core ~ gender + age_int + have_child + #child:sex +
+fit1 <- lm(n_rinc_core ~ gender + age_int + have_child + 
              relevel(as.factor(en), ref = "Head of Department") + org_type, data = reg) 
 fit1a <- lm(n_rinc_core ~ gender + age_int + have_child + women:have_child +
              relevel(as.factor(en), ref = "Head of Department") + org_type, data = reg) 
-# fit1b <- lm(n_rinc_core ~ gender + age_int + child + men:have_child +
-#              relevel(as.factor(en), ref = "Head of Department") + org_type, data = reg) 
-# fit1c <- lm(n_rinc_core ~ gender + age_int + child + women:have_child +
-#              relevel(as.factor(en), ref = "Head of Department") + org_type, data = reg) 
 
-fit2 <- lm(n_rinc ~ gender + age_int + have_child + #child:sex +
+fit2 <- lm(n_rinc ~ gender + age_int + have_child + 
              relevel(as.factor(en), ref = "Head of Department") + org_type, data = reg) 
 fit2a <- lm(n_rinc ~ gender + age_int + have_child + women:have_child +
              relevel(as.factor(en), ref = "Head of Department") + org_type, data = reg) 
 
-reg1 <- stargazer(fit1, fit1a,fit2,fit2a, header=FALSE, #type = 'html',
-               #type="html", #dep.var.labels=c("Core", "All Pubs"),
-          #title="Table 2: Regression Results", 
-          digits = 1, out = "table1.html",
-          dep.var.labels = c("RISC Core", "Total RISC"),
-          covariate.labels = c("Male",
-                               "Age",
-                               "Have child",
-                               "Assistant Lect vs Head of Dep",
-                               "Associate Prof vs Head of Dep",
-                               "Full Professor vs Head of Dep",
-                               "Lecturer vs Head of Dep",
-                               "Other positions vs Head of Dep",
-                               "PhD student vs Head of Dep",
-                               "Uni vs Top Uni"))
+reg1 <- stargazer(fit1, fit1a,fit2,fit2a, header=FALSE, 
+                  #type = 'html',
+                  digits = 1, out = "table1.html",
+                  dep.var.labels = c("RISC Core", "Total RISC"),
+                  covariate.labels = c(
+                    "Male",
+                    "Age",
+                    "Have child",
+                    "Assistant Lect vs Head of Dep",
+                    "Associate Prof vs Head of Dep",
+                    "Full Professor vs Head of Dep",
+                    "Lecturer vs Head of Dep",
+                    "Other positions vs Head of Dep",
+                    "PhD student vs Head of Dep",
+                    "Uni vs Top Uni"
+                  ))
 
 
 htmltools::includeHTML("table1.html")
 
 ```
-
