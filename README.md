@@ -6,7 +6,7 @@ The data for the study was obtained from a survey of 2,076 academic economists c
 
 ### Supplementary Materials
 
-To access the supplementary materials for this study, please visit the following link: https://github.com/hellche/parenthood_HEI. The materials provide additional information about the data and methods used in the project.
+To access the supplementary materials for this study, please visit the following link: https://hellche.github.io/parenthood_HEI/. The materials provide additional information about the data and methods used in the project.
 
 ### Data
 
